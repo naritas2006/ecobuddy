@@ -1,15 +1,15 @@
 // src/pages/Dashboard.js
 import React, { useEffect, useState } from "react";
 import ActivityCard from "../components/ActivityCard";
-import UploadActivityForm from "../components/UploadActivityForm";
-import "../App.css"; // include app styles
-import "../index.css"; // include shimmer & tailwind
+import "../App.css";
+import "../index.css";
 
 export default function Dashboard() {
   const [activities, setActivities] = useState([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/activities")
+    // Fetch user's activities (user_id = 1 for now)
+    fetch("http://127.0.0.1:8000/user-activities/1")
       .then(res => res.json())
       .then(data => setActivities(data))
       .catch(err => console.error(err));
@@ -20,10 +20,6 @@ export default function Dashboard() {
       <h1 className="text-5xl font-extrabold text-center mb-8 shimmer">
         EcoBuddy Dashboard
       </h1>
-
-      <div className="flex justify-center mb-10">
-        <UploadActivityForm />
-      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {activities.length === 0 ? (

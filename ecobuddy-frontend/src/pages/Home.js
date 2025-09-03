@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import StepCard from "../components/StepCard";
+import { useEffect, useState } from "react";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -9,6 +10,15 @@ const fadeIn = {
 
 export default function Home() {
   const navigate = useNavigate();
+  const [challenges, setChallenges] = useState([]);
+
+  // Fetch challenges for preview
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/challenges")
+      .then((res) => res.json())
+      .then((data) => setChallenges(data.slice(0, 3))) // show top 3
+      .catch((err) => console.error("Failed to fetch challenges:", err));
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-gradient-to-br from-green-200 via-green-300 to-green-400 text-green-900 font-sans">
@@ -91,6 +101,35 @@ export default function Home() {
             bgColor="bg-green-400"
           />
         </div>
+      </motion.section>
+
+      {/* Challenges Preview */}
+      <motion.section
+        className="mt-24 max-w-6xl mx-auto px-4"
+        {...fadeIn}
+      >
+        <h3 className="text-2xl font-semibold mb-6">Active Challenges</h3>
+        {challenges.length === 0 ? (
+          <p>Loading challenges...</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {challenges.map((ch) => (
+              <motion.div
+                key={ch.challenge_id}
+                whileHover={{ scale: 1.03 }}
+                className="bg-white shadow-md rounded-xl p-5 border cursor-pointer"
+                onClick={() => navigate("/challenges")}
+              >
+                <h4 className="font-semibold text-lg">{ch.name}</h4>
+                <p className="text-gray-700 mt-1">{ch.description}</p>
+                <p className="text-gray-500 text-sm mt-1">
+                  {ch.start_date} → {ch.end_date}
+                </p>
+                <p className="font-semibold mt-1">Reward: {ch.reward_points} pts</p>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </motion.section>
 
       {/* Quick Links */}
